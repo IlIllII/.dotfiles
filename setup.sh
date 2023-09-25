@@ -2,19 +2,18 @@
 
 DOTFILES_DIR=~/.dotfiles
 BACKUP_DIR=~/.dotfiles_backup
+EXCLUDE_FILES=("README.md" "LICENSE" "*.sh" ".gitignore" ".git")
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
 echo "Backing up existing dotfiles..."
 mkdir -p $BACKUP_DIR
 
-EXCLUDE_FILES=("README.md" "LICENSE" "*.sh" ".gitignore")
-
 should_exclude() {
 	local file_name="$1"
 	for excluded_file in "${EXCLUDE_FILES[@]}"; do
-		[[ "$file_name" == @excluded_file ]] && return 0
+		[[ "$file_name" == $excluded_file ]] && return 0
 	done
 	return 1
-
 }
 
 for dotfile in $DOTFILES_DIR/.*; do
@@ -30,8 +29,8 @@ for dotfile in $DOTFILES_DIR/.*; do
 	fi
 
 	if [ -e ~/$file ] || [ -L ~/$file ]; then
-		echo "Moving ~/$file to $BACKUP_DIR"
-		mv ~/$file $BACKUP_DIR/
+		echo "Moving ~/$file to $BACKUP_DIR/${file}_$TIMESTAMP"
+		mv ~/$file $BACKUP_DIR/${file}_$TIMESTAMP
 	fi
 
 	echo "Creating symlink for $file in home directory"
